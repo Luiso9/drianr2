@@ -108,7 +108,7 @@ app.post('/api/upload-presign', async (c) => {
       R2_ACCESS_KEY_ID: c.env.R2_ACCESS_KEY_ID,
       R2_SECRET_ACCESS_KEY: c.env.R2_SECRET_ACCESS_KEY,
     },
-    'backingup', // your bucket name
+    'backingup', // yes its my bucket name?!
     key,
     contentType
   )
