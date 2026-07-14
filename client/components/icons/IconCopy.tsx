@@ -1,0 +1,7 @@
+export default function IconCopy() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24">
+	<path fill="currentColor" d="M9 14H4v6h16v-6h-5v-2h7v10H2V12h7zm4-10h2v2h2v2h-4v10h-2V8H7V6h2V4h2V2h2z"></path>
+    </svg>
+  )
+}

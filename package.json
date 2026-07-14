@@ -1,0 +1,23 @@
+{
+  "name": "my-r2",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "build:client": "shx mkdir -p dist && shx cp public/index.html dist/index.html && esbuild client/main.tsx --bundle --outfile=dist/app.js --jsx=automatic --jsx-import-source=hono/jsx/dom --format=esm --minify && tailwindcss -i client/styles/input.css -o dist/style.css --minify",
+    "deploy": "yarn build:client && wrangler deploy",
+    "dev:client": "yarn build:client --watch"
+  },
+  "dependencies": {
+    "aws4fetch": "^1.0.20",
+    "hono": "^4.12.30",
+    "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260714.1",
+    "@tailwindcss/cli": "^4.3.2",
+    "esbuild": "^0.28.1",
+    "shx": "^0.4.0",
+    "wrangler": "^4.110.0"
+  }
+}
