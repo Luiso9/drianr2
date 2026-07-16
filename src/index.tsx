@@ -78,8 +78,8 @@ app.get('/api/list', async (c) => {
   return c.json({ items })
 })
 
-app.get('/api/file/*', async (c) => {
-  const key = decodeURIComponent(c.req.path.replace('/api/file/', ''))
+app.get('/*', async (c) => {
+  const key = decodeURIComponent(c.req.path.slice(1))
   const isDownload = c.req.query('download') === '1'
 
   const object = await c.env.BUCKET.get(key)
