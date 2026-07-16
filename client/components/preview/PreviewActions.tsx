@@ -6,7 +6,6 @@ import IconCopy from "../icons/IconCopy";
 import IconDownload from "../icons/IconDownload";
 import IconTrash from "../icons/IconTrash";
 import type { CSSProperties } from "hono/jsx";
-import DeleteButton from "../DeleteButton";
 
 const MONO: CSSProperties = {
   fontFamily: "'JetBrains Mono', monospace",
@@ -22,11 +21,22 @@ export default function PreviewActions({
   item,
   onDelete,
 }: PreviewActionsProps) {
-  const [confirm, setConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-  const handleDelete = () => {
-    if (confirm) onDelete();
-    else setConfirm(true);
+  const handleDelete = async (e: MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm(`Delete "${item.name}"? This cannot be undone.`)) return;
+
+    setDeleting(true);
+    try {
+      const res = await fetch(fileApiUrl(item.path), { method: "DELETE" });
+      if (res.ok) onDelete();
+      else alert("Delete failed.");
+    } catch {
+      alert("Delete failed.");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -52,7 +62,15 @@ export default function PreviewActions({
           <IconDownload />
           Download
         </a>
-        <DeleteButton item={item} onDeleted={onDelete} />
+        <button
+          className="flex items-center justify-center gap-1.5 px-2 py-2 border border-nord4 text-nord3 hover:text-nord11 hover:border-nord11 hover:bg-nord5 transition-colors text-xs disabled:opacity-50"
+          style={{ borderRadius: "2px", ...MONO }}
+          onClick={handleDelete}
+          disabled={deleting}
+        >
+          <IconTrash />
+          Delete
+        </button>
       </div>
     </div>
   );
