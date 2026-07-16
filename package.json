@@ -19,5 +19,6 @@
     "esbuild": "^0.28.1",
     "shx": "^0.4.0",
     "wrangler": "^4.110.0"
-  }
+  },
+  "packageManager": "yarn@4.17.1"
 }
