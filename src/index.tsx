@@ -43,7 +43,7 @@ function escapeHtml(str: string): string {
 
 // route route route route !!!!!!!!!!!!!!!!!!!!
 
-app.get('/login', (c) => c.html(loginPage()))
+app.get('/login', (c) => c.html(LoginPage()))
 
 app.post('/login', async (c) => {
   const form = await c.req.formData()
@@ -51,7 +51,7 @@ app.post('/login', async (c) => {
   const password = form.get('password')
 
   if (username !== c.env.AUTH_USERNAME || password !== c.env.AUTH_PASSWORD) {
-    return c.html(loginPage('Invalid username or password'), 401)
+    return c.html(LoginPage("Invalid username or password"), 401)
   }
 
   const isHttps = new URL(c.req.url).protocol === 'https:'
@@ -114,6 +114,12 @@ app.post('/api/upload-presign', async (c) => {
   )
 
   return c.json({ url, key, method: 'PUT', headers: { 'Content-Type': contentType } })
+})
+
+app.delete('/api/file/*', async (c) => {
+  const key = decodeURIComponent(c.req.path.replace('/api/file/', ''))
+  await c.env.BUCKET.delete(key)
+  return c.json({ ok: true })
 })
 
 export default app

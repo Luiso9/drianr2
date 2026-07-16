@@ -1,20 +1,24 @@
-import { useState, useCallback } from 'hono/jsx'
+import { useState, useCallback } from 'hono/jsx/dom'
 import type { CSSProperties } from 'hono/jsx'
-import type { FileItem } from '../../client/types'
-import { fileApiUrl } from '../../client/utils'
+import type { FileItem } from '../types'
+import { fileApiUrl } from '../utils'
 import IconFolder from './icons/IconFolder'
 import IconFile from './icons/IconFile'
 import IconChevron from './icons/IconChevron'
-import FileActions from './FileActions'
+import IconCopy from './icons/IconCopy'
+import IconDownload from './icons/IconDownload'
+import DeleteButton from './DeleteButton'
 
 const MONO: CSSProperties = { fontFamily: "'JetBrains Mono', monospace" }
 
 interface TreeNodeProps {
   item: FileItem
   depth?: number
+  onPreview: (item: FileItem) => void
+  onDelete: (id: string) => void
 }
 
-export default function TreeNode({ item, depth = 0 }: TreeNodeProps) {
+export default function TreeNode({ item, depth = 0, onPreview, onDelete }: TreeNodeProps) {
   const [open, setOpen] = useState(false)
   const [children, setChildren] = useState<FileItem[] | null>(null)
   const [loading, setLoading] = useState(false)
@@ -24,8 +28,6 @@ export default function TreeNode({ item, depth = 0 }: TreeNodeProps) {
 
   const toggle = useCallback(async () => {
     if (!isFolder) return
-
-    // Fetch on first expand only — subsequent toggles reuse the cached children
     if (!open && children === null) {
       setLoading(true)
       try {
@@ -42,22 +44,18 @@ export default function TreeNode({ item, depth = 0 }: TreeNodeProps) {
         setLoading(false)
       }
     }
-
     setOpen(o => !o)
   }, [isFolder, open, children, item.path])
 
   const handleRowClick = () => {
-    if (isFolder) {
-      toggle()
-    } else {
-      window.open(fileApiUrl(item.path), '_blank')
-    }
+    if (isFolder) toggle()
+    else onPreview(item)
   }
 
   return (
     <div>
       <div
-        className="group flex items-center gap-1.5 py-1 px-2 cursor-pointer rounded-sm transition-colors duration-100 hover:bg-nord5 select-none"
+        className="group flex items-center gap-1.5 py-1 px-2 cursor-pointer transition-colors duration-100 hover:bg-nord5 select-none"
         style={{ paddingLeft: `${8 + indent}px` }}
         onClick={handleRowClick}
       >
@@ -77,52 +75,56 @@ export default function TreeNode({ item, depth = 0 }: TreeNodeProps) {
         </span>
 
         <span className="text-xs text-nord3 flex-shrink-0 tabular-nums opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">
-          {item.size ?? `${item.children?.length ?? 0} items`}
+          {item.size ?? `${item.childCount ?? 0} items`}
         </span>
 
-        <span
-          className="text-xs text-nord3 flex-shrink-0 tabular-nums hidden md:block"
-          style={{ ...MONO, fontSize: '11px' }}
-        >
+        <span className="text-xs text-nord3 flex-shrink-0 tabular-nums hidden md:block" style={{ ...MONO, fontSize: '11px' }}>
           {item.modified}
         </span>
 
-        {!isFolder && (
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-            <FileActions
-              onCopy={e => {
-                e.stopPropagation()
-                navigator.clipboard.writeText(window.location.origin + fileApiUrl(item.path))
-              }}
-              onDownload={e => {
-                e.stopPropagation()
-                window.location.href = fileApiUrl(item.path, true)
-              }}
-            />
-          </div>
-        )}
+        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+          {!isFolder && (
+            <>
+              <button
+                className="p-1 rounded-sm hover:bg-nord4 text-nord3 hover:text-nord10 transition-colors"
+                title="Copy URL"
+                onClick={e => {
+                  e.stopPropagation()
+                  navigator.clipboard.writeText(window.location.origin + fileApiUrl(item.path))
+                }}
+              >
+                <IconCopy />
+              </button>
+              <a
+                className="p-1 rounded-sm hover:bg-nord4 text-nord3 hover:text-nord10 transition-colors"
+                title="Download"
+                href={fileApiUrl(item.path, true)}
+                onClick={e => e.stopPropagation()}
+              >
+                <IconDownload />
+              </a>
+            </>
+          )}
+          <DeleteButton item={item} onDeleted={() => onDelete(item.id)} />
+        </div>
       </div>
 
       {open && isFolder && (
         <div style={{ borderLeft: '1px solid #D8DEE9', marginLeft: `${8 + indent + 11}px` }}>
           {loading && (
-            <div
-              className="text-xs text-nord3 py-1"
-              style={{ ...MONO, paddingLeft: `${8}px` }}
-            >
-              Loading…
-            </div>
+            <div className="text-xs text-nord3 py-1" style={{ ...MONO, paddingLeft: '8px' }}>Loading…</div>
           )}
           {!loading && children?.length === 0 && (
-            <div
-              className="text-xs text-nord3 py-1 italic"
-              style={{ ...MONO, paddingLeft: `${8}px` }}
-            >
-              Empty folder
-            </div>
+            <div className="text-xs text-nord3 py-1 italic" style={{ ...MONO, paddingLeft: '8px' }}>Empty folder</div>
           )}
           {!loading && children?.map(child => (
-            <TreeNode key={child.id} item={child} depth={depth + 1} />
+            <TreeNode
+              key={child.id}
+              item={child}
+              depth={depth + 1}
+              onPreview={onPreview}
+              onDelete={(id) => setChildren(c => c?.filter(x => x.id !== id) ?? null)}
+            />
           ))}
         </div>
       )}

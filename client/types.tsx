@@ -18,4 +18,5 @@ export interface FileItem {
   modified: string
   path: string
   children?: FileItem[]
+  childCount?: number
 }

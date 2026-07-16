@@ -6,9 +6,11 @@ interface TreeViewProps {
   items: FileItem[]
   canGoUp: boolean
   onGoUp: () => void
+  onPreview: (item: FileItem) => void
+  onDelete: (id: string) => void
 }
 
-export default function TreeView({ items, canGoUp, onGoUp }: TreeViewProps) {
+export default function TreeView({ items, canGoUp, onGoUp, onPreview, onDelete }: TreeViewProps) {
   return (
     <div
       className="border border-nord4 bg-nord6 overflow-hidden"
@@ -37,7 +39,7 @@ export default function TreeView({ items, canGoUp, onGoUp }: TreeViewProps) {
         )}
         {items.map((item, idx) => (
           <div key={item.id} className={idx < items.length - 1 ? 'border-b border-nord4' : ''}>
-            <TreeNode item={item} depth={0} />
+            <TreeNode item={item} depth={0} onPreview={onPreview} onDelete={onDelete} />
           </div>
         ))}
       </div>

@@ -1,12 +1,13 @@
 import IconGrid from './icons/IconGrid'
 import IconTree from './icons/IconTree'
 
-type ViewMode = 'grid' | 'tree'
+export type ViewMode = 'grid' | 'tree'
 
 interface ViewToggleProps {
   view: ViewMode
   onChange: (view: ViewMode) => void
 }
+
 
 export default function ViewToggle({ view, onChange }: ViewToggleProps) {
   return (

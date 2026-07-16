@@ -1,12 +1,15 @@
 export default function IconFolder({ open }: { open?: boolean }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+    >
       <path
-        d="M1 4a1 1 0 0 1 1-1h4l1.5 1.5H14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4z"
-        fill={open ? '#88C0D0' : '#81A1C1'}
-        stroke="#5E81AC"
-        strokeWidth="0.75"
-      />
+        fill="currentColor"
+        d="M4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h5.175q.4 0 .763.15t.637.425L12 6h8q.825 0 1.413.588T22 8v10q0 .825-.587 1.413T20 20z"
+      ></path>
     </svg>
-  )
+  );
 }

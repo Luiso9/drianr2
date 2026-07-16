@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
+@source "../../client/**/*.{tsx,ts}";
 
 @theme inline {
   --color-nord0: #2E3440;
@@ -37,10 +38,6 @@ body {
 }
 
 /* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
 ::-webkit-scrollbar-track {
   background: transparent;
 }

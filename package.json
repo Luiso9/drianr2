@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
-    "build:client": "shx mkdir -p dist && shx cp public/index.html dist/index.html && esbuild client/main.tsx --bundle --outfile=dist/app.js --jsx=automatic --jsx-import-source=hono/jsx/dom --format=esm --minify && tailwindcss -i client/styles/input.css -o dist/style.css --minify",
+    "build:client": "shx mkdir -p dist && shx cp -r public/* dist/ && esbuild client/main.tsx --bundle --outfile=dist/app.js --jsx=automatic --jsx-import-source=hono/jsx/dom --format=esm --minify && tailwindcss -i client/styles/input.css -o dist/style.css --minify",
     "deploy": "yarn build:client && wrangler deploy",
     "dev:client": "yarn build:client --watch"
   },

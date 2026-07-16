@@ -29,7 +29,8 @@ export async function listFolder(bucket: R2Bucket, prefix: string): Promise<File
 
   for (const folderKey of listed.delimitedPrefixes ?? []) {
     const name = folderKey.slice(prefix.length).replace(/\/$/, '')
-    items.push({ id: folderKey, name, type: 'folder', modified: '', path: folderKey })
+    const childCount = await countImmediateChildren(bucket, folderKey)
+    items.push({ id: folderKey, name, type: 'folder', modified: '', path: folderKey, childCount })
   }
 
   for (const obj of listed.objects) {
@@ -49,4 +50,11 @@ export async function listFolder(bucket: R2Bucket, prefix: string): Promise<File
   }
 
   return items
+}
+
+async function countImmediateChildren(bucket: R2Bucket, folderPrefix: string): Promise<number> {
+  const listed = await bucket.list({ prefix: folderPrefix, delimiter: '/' })
+  const subfolders = listed.delimitedPrefixes?.length ?? 0
+  const files = listed.objects.filter(o => o.key !== folderPrefix).length
+  return subfolders + files
 }
